@@ -7,8 +7,10 @@ import com.lukhol.politechnika.aiclient.model.Point;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 @Getter
 @Setter
@@ -17,9 +19,11 @@ public class GameController {
 
     private String playerName;
     private int playerId;
+    private boolean waitForKey;
 
-    public void start() {
-        this.playerName = "Player 1";
+    public void start(boolean waitForKey) {
+        this.waitForKey = waitForKey;
+        this.playerName = Long.toString(System.currentTimeMillis());
         gameService.connectToGame(playerName);
     }
 
@@ -28,6 +32,14 @@ public class GameController {
     }
 
     public void moveRequest(GameMap map, List<Player> players, Point flag) {
+        if(waitForKey) {
+            try {
+                System.in.read();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         Player myPlayerFromRequest = players.stream().filter(a -> this.playerId == a.getId()).findFirst().orElse(null);
         Point startPoint = new Point(myPlayerFromRequest.getX(), myPlayerFromRequest.getY());
         Point endPoint = flag;
@@ -39,11 +51,7 @@ public class GameController {
         if(!startPoint.equals(endPoint)) {
             AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(startPoint, endPoint, map);
             List<Point> points = aStarAlgorithm.start(false);
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
             gameService.moveRequest(playerId, determinateMoveDirection(startPoint, points.get(0)));
         } else {
             throw new RuntimeException("End?");

@@ -98,30 +98,31 @@ public class AStarAlgorithm {
         int mapWidth = gameMap.getWidth();
 
         if(y > 0) {
-            aaa(nodesList, parentNode, x, y-1);
+            checkPoint(nodesList, parentNode, x, y-1);
         }
 
         if(mapHeight - 1 > y) {
-            aaa(nodesList, parentNode, x, y+1);
+            checkPoint(nodesList, parentNode, x, y+1);
         }
 
         if(x > 0) {
-            aaa(nodesList, parentNode, x-1, y);
+            checkPoint(nodesList, parentNode, x-1, y);
         }
 
         if(mapWidth - 1 > x) {
-            aaa(nodesList, parentNode, x+1, y);
+            checkPoint(nodesList, parentNode, x+1, y);
         }
 
         return nodesList;
     }
 
-    private void aaa(List<Node> nodesList, Node parentNode, int x, int y) {
+    private void checkPoint(List<Node> nodesList, Node parentNode, int x, int y) {
         int mapHeight = gameMap.getHeight();
         int mapWidth = gameMap.getWidth();
 
         Point point = new Point(x, y);
-        int actualGValue = parentNode.getGValue() + 10 + gameMap.getFields()[point.getY()][point.getX()];
+        int fieldCost = gameMap.getFields()[point.getY()][point.getX()];
+        int actualGValue = parentNode.getGValue() + 10 + (fieldCost == -1 ? fieldCost*-4 : fieldCost*3);
         Node node = new Node(
                 parentNode,
                 computeHValue(point, finishPoint),

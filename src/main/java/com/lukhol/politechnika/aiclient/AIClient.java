@@ -16,11 +16,12 @@ public class AIClient {
 
     public static void main(String[] args) throws URISyntaxException {
         try {
+            System.out.println("Bot started");
             final WebsocketClientEndpoint clientEndPoint = new WebsocketClientEndpoint(new URI("ws://localhost:8000"), gson);
             clientEndPoint.setMessageConsumer(gameService::receiveMessage);
             gameService.setWebsocketClientEndpoint(clientEndPoint);
             gameController.setGameService(gameService);
-            gameController.start();
+            gameController.start(false);
             while(true){}
         } catch (Exception e) {
             e.printStackTrace();
